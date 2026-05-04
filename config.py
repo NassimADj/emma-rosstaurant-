@@ -73,7 +73,7 @@ def get_secret(key, default=""):
     """Lire depuis Streamlit secrets (déployé) ou .env (local)."""
     try:
         import streamlit as st
-        val = st.secrets.get(key, "")
+        val = st.secrets[key] if key in st.secrets else ""
         if val:
             return val
     except Exception:
