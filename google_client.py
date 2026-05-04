@@ -1,6 +1,6 @@
 import requests
 import os
-from config import MAX_RESULTS, PARIS_ARRONDISSEMENTS, CATEGORIES
+from config import MAX_RESULTS, PARIS_ARRONDISSEMENTS, CATEGORIES, get_secret
 
 # Mapping catégories → types Google Places
 GOOGLE_TYPES = {
@@ -33,13 +33,13 @@ GOOGLE_TYPES = {
 
 class GoogleClient:
     def __init__(self):
-        # Streamlit secrets en priorité (déployé), sinon .env (local)
-        try:
-            import streamlit as st
-            _secrets = st.secrets if hasattr(st, "secrets") else {}
-        except Exception:
-            _secrets = {}
-        self.api_key = _secrets.get("GOOGLE_PLACES_API_KEY", "") or os.getenv("GOOGLE_PLACES_API_KEY", "")
+        self._key = None
+
+    @property
+    def api_key(self):
+        if self._key is None:
+            self._key = get_secret("GOOGLE_PLACES_API_KEY")
+        return self._key
         self.base = "https://places.googleapis.com/v1"
 
     @property

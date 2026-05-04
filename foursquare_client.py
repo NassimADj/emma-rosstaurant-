@@ -1,6 +1,6 @@
 import requests
 import os
-from config import MAX_RESULTS
+from config import MAX_RESULTS, get_secret
 from yelp_client import PARIS_ARRONDISSEMENT_COORDS
 
 # Catégories Foursquare (IDs) — https://docs.foursquare.com/data-products/docs/categories
@@ -34,13 +34,13 @@ FOURSQUARE_CATEGORIES = {
 
 class FoursquareClient:
     def __init__(self):
-        # Streamlit secrets en priorité (déployé), sinon .env (local)
-        try:
-            import streamlit as st
-            _secrets = st.secrets if hasattr(st, "secrets") else {}
-        except Exception:
-            _secrets = {}
-        self.api_key = _secrets.get("FOURSQUARE_API_KEY", "") or os.getenv("FOURSQUARE_API_KEY", "")
+        self._key = None
+
+    @property
+    def api_key(self):
+        if self._key is None:
+            self._key = get_secret("FOURSQUARE_API_KEY")
+        return self._key
         self.base = "https://api.foursquare.com/v3"
 
     @property

@@ -1,19 +1,9 @@
 import os
+from dotenv import load_dotenv
 
-# Essayer Streamlit secrets d'abord (déployé), sinon .env (local)
-try:
-    import streamlit as st
-    _secrets = st.secrets if hasattr(st, "secrets") else {}
-except Exception:
-    _secrets = {}
+load_dotenv()
 
-try:
-    from dotenv import load_dotenv
-    load_dotenv()
-except ImportError:
-    pass
-
-YELP_API_KEY = _secrets.get("YELP_API_KEY", "") or os.getenv("YELP_API_KEY", "")
+YELP_API_KEY = os.getenv("YELP_API_KEY", "")
 YELP_BASE_URL = "https://api.yelp.com/v3"
 
 PARIS_ARRONDISSEMENTS = {
@@ -77,6 +67,18 @@ PRICE_LABELS = {
 }
 
 MAX_RESULTS = 10
+
+
+def get_secret(key, default=""):
+    """Lire depuis Streamlit secrets (déployé) ou .env (local)."""
+    try:
+        import streamlit as st
+        val = st.secrets.get(key, "")
+        if val:
+            return val
+    except Exception:
+        pass
+    return os.getenv(key, default)
 
 
 def score_pertinent(rating, review_count):

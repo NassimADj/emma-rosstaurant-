@@ -1,18 +1,28 @@
 import requests
-from config import YELP_API_KEY, YELP_BASE_URL, MAX_RESULTS, PARIS_ARRONDISSEMENTS
+from config import YELP_BASE_URL, MAX_RESULTS, PARIS_ARRONDISSEMENTS, get_secret
 
 
 class YelpClient:
     def __init__(self):
-        self.headers = {"Authorization": f"Bearer {YELP_API_KEY}"}
+        self._key = None
         self.base = YELP_BASE_URL
 
     @property
+    def api_key(self):
+        if self._key is None:
+            self._key = get_secret("YELP_API_KEY")
+        return self._key
+
+    @property
+    def headers(self):
+        return {"Authorization": f"Bearer {self.api_key}"}
+
+    @property
     def available(self):
-        return bool(YELP_API_KEY)
+        return bool(self.api_key)
 
     def _get(self, endpoint, params):
-        if not YELP_API_KEY:
+        if not self.api_key:
             return None, "Clé API Yelp manquante — ajoute-la dans .env"
         try:
             r = requests.get(
