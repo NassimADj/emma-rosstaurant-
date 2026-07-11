@@ -33,6 +33,8 @@ FOURSQUARE_CATEGORIES = {
 
 
 class FoursquareClient:
+    BASE_URL = "https://api.foursquare.com/v3"
+
     def __init__(self):
         self._key = None
 
@@ -41,7 +43,10 @@ class FoursquareClient:
         if self._key is None:
             self._key = get_secret("FOURSQUARE_API_KEY")
         return self._key
-        self.base = "https://api.foursquare.com/v3"
+
+    @property
+    def base(self):
+        return self.BASE_URL
 
     @property
     def available(self):

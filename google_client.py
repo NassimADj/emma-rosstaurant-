@@ -32,6 +32,8 @@ GOOGLE_TYPES = {
 
 
 class GoogleClient:
+    BASE_URL = "https://places.googleapis.com/v1"
+
     def __init__(self):
         self._key = None
 
@@ -40,7 +42,10 @@ class GoogleClient:
         if self._key is None:
             self._key = get_secret("GOOGLE_PLACES_API_KEY")
         return self._key
-        self.base = "https://places.googleapis.com/v1"
+
+    @property
+    def base(self):
+        return self.BASE_URL
 
     @property
     def available(self):
